@@ -62,6 +62,18 @@ def init_db():
         UNIQUE(target_date, hour, latitude, longitude)
     )
     ''')
+
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        email  TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'user',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP        
+    )
+    ''')
     
     # Create index for faster querying
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON temperature_data(timestamp)')

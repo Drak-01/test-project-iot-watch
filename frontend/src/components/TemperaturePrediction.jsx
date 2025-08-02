@@ -218,7 +218,7 @@ const TemperaturePrediction = () => {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 h-full">
       <div className="mb-4 flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">Temperature Prediction</h2>
+          <h2 className="text-xl font-semibold text-gray-500 ">Temperature Prediction</h2>
           <p className="text-sm font-medium text-gray-500">5-Day Hourly Temperature Forecast</p>
         </div>
         

@@ -12,10 +12,20 @@ from sklearn.preprocessing import MinMaxScaler
 from flask import Flask, jsonify, request, send_from_directory
 from services.weather_fetcher import *
 from models import *
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from auth import auth_bp
+import os
 
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
+
+#Configuration JWT 
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "@gr1-4-un/token@$az//***/ankazkjzad489@@@")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+
+
+jwt = JWTManager(app)
 
 UPDATE_INTERVAL_SECONDS = 60
 PREDICTION_UPDATE_HOURS = 24
@@ -23,6 +33,8 @@ CACHE_DURATION = 600
 last_prediction = None
 last_prediction_time = None
 
+#blueprints
+app.register_blueprint(auth_bp, url_prefix="/api")
 
 # Initialize database
 init_db()
@@ -32,6 +44,7 @@ def run_background_services():
         """Update temperature data continuously"""
         while True:
             try:
+                #Get current temperature and store in BD
                 get_current_temperature()
                 time.sleep(1)
             except Exception as e:
@@ -39,6 +52,7 @@ def run_background_services():
                 time.sleep(1)
     
     def scheduler():
+        """This will be run every day at 00:00 to update the prediction for next 5 days"""
         schedule.every().day.at("00:00").do(update_all_predictions)
         schedule.every().day.at("00:00").do(purge_old_data)
         
@@ -65,6 +79,8 @@ def run_background_services():
     print(f"Prediction updates scheduled (daily at midnight)")
     
     print("All background services started successfully")
+
+#Authentication with JWT
 
 @app.route('/api/latest', methods=['GET'])
 def get_latest_temperature():
