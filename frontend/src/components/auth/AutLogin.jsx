@@ -1,49 +1,107 @@
 import { Target, Underline } from 'lucide-react';
 import React, {  useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { API_BASE_URL } from '../../config';
 
 const Login = ()=> {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
+  //const [loading, setLoading] = useState(true);
+
+
+  //Send requests to login in the backend /api/login
+  const loginRequest = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/login`,{
+        'method' : 'POST',
+        'headers': {    
+          'Content-Type':'application/json',
+        },
+        body: JSON.stringify({email,password}),
+      })
+
+      if(!response.ok){
+        const errorData = await response.json()
+        setErrorMsg(errorData?.message || 'connexion error')
+        return;
+      }
+
+      const data = await response.json();
+
+      // store token in localStorage
+      localStorage.setItem('access_token', data.access_token);
+
+      navigate('/'); 
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
   return (
-    <div >
-      <form class="max-w-sm mx-auto bg-white  rounded-xl shadow-md/30 mt-30 px-2 dark:shadow-red">
-        <h2 className="m-4 text-xl">Login</h2>
+    <div className="flex justify-center items-center h-screen rounded-xl mr-5 ">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          loginRequest();
+        }}
+        className="max-w-sm w-full bg-white rounded-xl shadow-md px-6 py-8
+        ">
 
-        <div class="mb-5 justify-items-start">
-          <label for="email" className="block mb-2 text-sm font-medium">Email</label>
-          <input type="email" id="email" 
-            className="bg-gray-50 border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:text-black  dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+        <h2 className="text-2xl font-semibold mb-6 text-center">Connexion</h2>
+
+        {errorMsg && (
+          <div className="text-red-500 text-sm mb-4 text-center">{errorMsg}</div>
+        )}
+
+        <div className="mb-5 justify-items-start">
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-500">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="name@gmail.com" 
-            required />
-        </div>
-        <div class="mb-5 justify-items-start">
-          <label for="password" className="block mb-2 text-sm font-medium">Password</label>
-          <input type="password" id="password" 
-              className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:text-black dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-              value={password}
-              onChange={(e)=> setPassword(e.target.value)}
-              required />
+            required
+            className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="name@example.com"
+          />
         </div>
 
-        <button type="submit" 
-          class="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mb-5">
-            Connecter
-          </button>
-        
-        <div className='mb-6'>
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:Underline dark:text-blue-400">
+        <div className="mb-5 justify-items-start">
+          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-500">
+            Mot de passe
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="bg-gray-50 border border-gray-300 dark:text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-green-900 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition duration-200"
+        >
+          Se connecter
+        </button>
+
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">
             Register
           </Link>
         </div>
       </form>
-
     </div>
   );
-}
+};
 
 export default Login;

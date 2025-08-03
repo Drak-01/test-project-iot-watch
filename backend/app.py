@@ -34,7 +34,7 @@ last_prediction = None
 last_prediction_time = None
 
 #blueprints
-app.register_blueprint(auth_bp, url_prefix="/api")
+app.register_blueprint(auth_bp)
 
 # Initialize database
 init_db()
@@ -83,6 +83,7 @@ def run_background_services():
 #Authentication with JWT
 
 @app.route('/api/latest', methods=['GET'])
+@jwt_required()
 def get_latest_temperature():
     """Get the latest temperature reading and current hour's average"""
     latitude = request.args.get('latitude', DEFAULT_LATITUDE)
@@ -154,6 +155,7 @@ def get_latest_temperature():
         conn.close()
 
 @app.route('/api/history', methods=['GET'])
+@jwt_required()
 def get_temperature_history():
     """Get the last 10 individual temperature readings"""
     latitude = request.args.get('latitude', DEFAULT_LATITUDE)
@@ -209,6 +211,7 @@ def get_temperature_history():
         conn.close()
 
 @app.route('/api/weekly-stats', methods=['GET'])
+@jwt_required()
 def get_weekly_stats():
     try:
         latitude = request.args.get('latitude', DEFAULT_LATITUDE)
@@ -285,6 +288,7 @@ def get_weekly_stats():
         })
 
 @app.route('/api/predict', methods=['GET'])
+@jwt_required()
 def predict_temperature():
     """Get temperature predictions from database"""
     try:

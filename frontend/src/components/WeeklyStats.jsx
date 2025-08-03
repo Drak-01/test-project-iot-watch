@@ -30,6 +30,7 @@ const WeeklyStats = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [debugInfo, setDebugInfo] = useState("");
+  const token = localStorage.getItem("access_token");
 
   const fetchWeeklyStats = async () => {
     try {
@@ -37,7 +38,13 @@ const WeeklyStats = () => {
       console.log(`Fetching weekly stats from: ${API_BASE_URL}/api/weekly-stats`);
       setDebugInfo(`Attempting to fetch from: ${API_BASE_URL}/api/weekly-stats`);
       
-      const response = await fetch(`${API_BASE_URL}/api/weekly-stats`);
+      const response = await fetch(`${API_BASE_URL}/api/weekly-stats`,{
+        method:'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }
+      });
       
       if (!response.ok) {
         const errorText = await response.text();

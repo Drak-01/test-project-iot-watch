@@ -7,6 +7,7 @@ import Temperature from "./pages/Temperature"
 import Humidity from './pages/Humidity';
 import Home from './pages/Home';
 import Predictions from './pages/Predictions';
+import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PrivateRoute from './components/auth/PrivateRoute';
@@ -20,9 +21,28 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/temperature" 
           element={
-            <Temperature />} />
-        <Route path="/humidity" element={<Humidity />} />
-        <Route path='/predictions' element={<Predictions />} />
+            <PrivateRoute>
+              <Temperature />
+            </PrivateRoute>
+          } />
+        <Route path="/humidity" 
+           element={
+            <PrivateRoute>
+              <Humidity />
+            </PrivateRoute>
+        } />
+        <Route path='/predictions' 
+          element={
+            <PrivateRoute>
+              <Predictions />
+            </PrivateRoute>
+          } />
+          <Route path='/history' 
+            element={
+              <PrivateRoute>
+                <History />
+              </PrivateRoute>
+          } />
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/contact' element={<Contact />}/>

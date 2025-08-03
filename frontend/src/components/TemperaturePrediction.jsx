@@ -29,14 +29,25 @@ const TemperaturePrediction = () => {
   const [error, setError] = useState(null);
   const [debugInfo, setDebugInfo] = useState("");
   const [predictionDay, setPredictionDay] = useState(1);
+  const token = localStorage.getItem("access_token");
+
 
   const fetchPredictions = async () => {
     try {
       setLoading(true);
       console.log(`Fetching predictions from: ${API_BASE_URL}/api/predict?day=${predictionDay}`);
       setDebugInfo(`Attempting to fetch from: ${API_BASE_URL}/api/predict?day=${predictionDay}`);
-      
-      const response = await fetch(`${API_BASE_URL}/api/predict?day=${predictionDay}`);
+
+      //You must add the and backend accept you requests with JWT
+      console.log("JWT Token:", token);
+
+      const response = await fetch(`${API_BASE_URL}/api/predict?day=${predictionDay}`,{
+        method:'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        }
+      });
       
       if (!response.ok) {
         const errorText = await response.text();

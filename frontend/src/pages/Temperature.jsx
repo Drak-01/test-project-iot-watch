@@ -10,11 +10,6 @@ function Temperature(){
       <div className="w-screen max-w-screen min-h-screen bg-zinc-50">
         <Header />
         <Content />
-                
-        <div className='m-6'>
-          <WeeklyStats />
-        </div> 
-        
       </div>
     )
 }

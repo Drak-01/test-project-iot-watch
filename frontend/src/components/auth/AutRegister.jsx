@@ -1,16 +1,50 @@
 import { Target, Underline } from 'lucide-react';
 import React, {  useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { API_BASE_URL } from '../../config';
 
 const AuthRegister =()=> {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password_confir, setPasswordConfir] = useState('');
   const [username, setUsername] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const navigate = useNavigate();
+
+  //Register a new user in the database
+  const registerRequest = async () => {
+    
+    const response = await fetch(`${API_BASE_URL}/api/register`, {
+        'method': 'POST',
+        'headers': {
+            'Content-Type':'application/json',
+        },
+        body: JSON.stringify({username, email, password, password_confir})
+    });
+
+    if (!response.ok){
+        const errorData = await response.json()
+        setErrorMsg(errorData?.message || 'Error inscription')
+    }
+    const data = await response.json()
+
+    if (data.success){
+        navigate('/login');
+    }
+  };
 
   return (
-    <div >
-      <form class="max-w-sm mx-auto bg-white  rounded-xl shadow-md/30 mt-10 px-2 dark:shadow-red">
+    <div className="flex justify-center items-center h-screen rounded-xl">
+      <form 
+        onSubmit={
+            (e) => {
+                e.preventDefault();
+                registerRequest();
+            }
+        }
+      className="max-w-sm w-full bg-white rounded-xl shadow-md px-6 py-8">        
         <h2 className="m-4 text-xl">Inscription</h2>
         
         <div class="mb-5 justify-items-start">
@@ -51,12 +85,10 @@ const AuthRegister =()=> {
         </div>
 
         <button type="submit" 
-          class="text-white bg-blue-500 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mb-5">
+          class="w-full bg-green-900 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition duration-200">
             register
-          </button>
-        
+        </button>
       </form>
-
     </div>
   );
 }

@@ -5,7 +5,7 @@ const PrivateRoute = ({ children}) => {
     const token = localStorage.getItem('access_token');
 
     if(!token) {
-        return <Navigate to="../../pages/Login.jsx" replace />
+        return <Navigate to="/login" replace />
     }
 
     return children;

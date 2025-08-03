@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import { API_BASE_URL } from '../config';
+
 
 function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -11,27 +13,26 @@ function Header() {
         return window.matchMedia("(prefers-color-scheme: dark)").matches;
     });
 
-    //check if user is connect
-    const [isLoggedIn, setIsLoggedIn] = React.useState(() => {
-        return !!localStorage.getItem('access_token');
-    });
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('access_token'));
+    const navigate = useNavigate();
 
     // function to deconnecter
-    const handleLogout = () => {
+    const handleLogout = async () => {
         localStorage.removeItem('access_token');
         setIsLoggedIn(false);
-        window.location.href='../pages/Login.jsx'
+        navigate('/');
     };
 
     useEffect(() => {
         if (dark) {
-            document.body.classList.add("dark");
-            localStorage.setItem("theme", "dark");
+          document.body.classList.add("dark");
+          localStorage.setItem("theme", "dark");
         } else {
-            document.body.classList.remove("dark");
-            localStorage.setItem("theme", "light");
+          document.body.classList.remove("dark");
+          localStorage.setItem("theme", "light");
         }
-    }, [dark]);
+      }, [dark]);
+      
 
     return (
         <header className="w-full bg-white shadow">
@@ -53,10 +54,10 @@ function Header() {
                 {/* Nav links */}
                 <ul className="hidden md:flex flex-row space-x-4 flex-1 justify-center items-center">
                     <li className="font-medium text-xl cursor-pointer"><Link to="/">Home</Link></li>
-                    <li className="font-medium text-xl cursor-pointer"><Link to="/temperature">Temperature</Link></li>
-                    <li className="font-medium text-xl cursor-pointer"><Link to="/humidity">Humidity</Link></li>
-                    <li className="font-medium text-xl cursor-pointer"><Link to="/predictions">Predictions</Link></li>
-
+                    {isLoggedIn && <li className="font-medium text-xl cursor-pointer"><Link to="/temperature">Temperature</Link></li>}
+                    {isLoggedIn && <li className="font-medium text-xl cursor-pointer"><Link to="/humidity">Humidity</Link></li>}
+                    {isLoggedIn && <li className="font-medium text-xl cursor-pointer"><Link to="/predictions">Predictions</Link></li>}
+                    {isLoggedIn && <li className="font-medium text-xl cursor-pointer"><Link to="/history">History</Link></li>}
                 </ul>
                 {/* Buttons and light mode/dark mode toggle */}
                 <div className="hidden md:flex flex-row space-x-4 flex-1 justify-end items-center">
@@ -94,9 +95,16 @@ function Header() {
                 <div className="md:hidden px-4 pb-4">
                     <ul className="flex flex-col space-y-2">
                         <li className="font-medium text-lg"><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
-                        <li className="font-medium text-lg"><Link to="/temperature" onClick={() => setMenuOpen(false)}>Temperature</Link></li>
-                        <li className="font-medium text-lg"><Link to="/humidity" onClick={() => setMenuOpen(false)}>Humidity</Link></li>
-                        <li className='font-medium text-lg'><Link to='/predictions' onClick={()=> setMenuOpen(false)}>Predictions</Link></li>
+
+                        {isLoggedIn && (<li className="font-medium text-lg">
+                                <Link to="/temperature" onClick={() => setMenuOpen(false)}>
+                                Temperature
+                                </Link>
+                            </li>
+                        )}
+                        {isLoggedIn &&  <li className="font-medium text-lg"><Link to="/humidity" onClick={() => setMenuOpen(false)}>Humidity</Link></li>}
+                        {isLoggedIn && <li className='font-medium text-lg'><Link to='/predictions' onClick={()=> setMenuOpen(false)}>Predictions</Link></li>}
+                    
                     </ul>
                     <div className="flex flex-col space-y-2 mt-4">
                         <button className="bg-green-500 rounded-b-xl text-white px-4 py-2">Say Hello!</button>
